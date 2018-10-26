@@ -27,12 +27,12 @@ class Main {
             int it_cnt = 0;
             Random rand = new Random();
 
-            while (it_cnt <= 1000) {
+            while (it_cnt <= 100) {
                 int nextValue = rand.nextInt(10000);
                 mi.set(nextValue);
                 System.out.println("Set value to " + nextValue);
                 try {
-                    Thread.sleep(rand.nextInt(10000));
+                    Thread.sleep(10000);
                 }
                 catch (InterruptedException ex) {
                     ex.printStackTrace();
@@ -43,9 +43,11 @@ class Main {
 
     static class ReadThread extends Thread {
         private MutableInteger mi;
+        private int threadNumber;
 
-        public ReadThread(MutableInteger mi) {
+        public ReadThread(MutableInteger mi, int threadNumber) {
             this.mi = mi;
+            this.threadNumber = threadNumber;
         }
 
         public void run() {
@@ -54,13 +56,13 @@ class Main {
             while (true) {
 
                 try {
-                    Thread.sleep(rand.nextInt(10000));
+                    Thread.sleep(rand.nextInt(5000));
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
 
                 int gotValue = mi.get();
-                System.out.println("Got value " + gotValue);
+                System.out.println(String.format("%s got value %s ", "Thread " + threadNumber, gotValue));
             }
         }
     }
@@ -68,9 +70,9 @@ class Main {
     public static void main(String[] args) {
         MutableInteger mutableInteger = new MutableInteger();
 
-        Thread[] readThreads = new ReadThread[10];
-        for (int i = 0; i < 10; i++) {
-            readThreads[i] = new ReadThread(mutableInteger);
+        Thread[] readThreads = new ReadThread[30];
+        for (int i = 0; i < 30; i++) {
+            readThreads[i] = new ReadThread(mutableInteger, i + 1);
             readThreads[i].start();
         }
 
@@ -86,7 +88,7 @@ class Main {
             }
         }
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 30; i++) {
             readThreads[i].interrupt();
         }
 
